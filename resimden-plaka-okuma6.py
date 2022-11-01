@@ -1,4 +1,5 @@
 import cv2
+from cv2 import bitwise_and
 import numpy as np
 import pytesseract
 import imutils
@@ -13,10 +14,28 @@ cnts = imutils.grab_contours(contours)
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:10]
 screen = None
 
+for c in cnts:
+    epsilon = 0.018*cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, epsilon, True)
+
+    if len(approx) == 4:
+        screen = approx
+        break
+
+mask = np.zeros(gray.shape, np.uint8)
+new_img = cv2.drawContours(mask, [screen], 0, (255,255,255), -1)
+new_img = cv2.bitwise_and(img, img, mask=mask)
+
+(x,y) = np.where(mask == 255)
+(topx, topy) = (np.min(x), np.min(y))
+(bottomx, bottomy) = (np.max(x), np.max(y))
+cropped = gray[topx:bottomx+1, topy:bottomy+1]
 
 cv2.imshow("img", img)
 cv2.imshow("gray", gray)
 cv2.imshow("filtered", filtered)
 cv2.imshow("edges", edges)
+cv2.imshow("new_img", new_img)
+cv2.imshow("cropped", cropped)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

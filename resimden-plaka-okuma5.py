@@ -8,7 +8,7 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 filtered = cv2.bilateralFilter(gray, 6, 250, 250)
 edges = cv2.Canny(filtered, 30, 200)
 
-contours,_ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+contours = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(contours)
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:10]
 screen = None
